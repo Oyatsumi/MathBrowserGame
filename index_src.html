@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<!-- saved from url=(0063)file:///home/oyatsumi/NetBeansProjects/WebVariados/matjogo.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script language="javascript">
+            var resultado;
+            var pri = true;
+            var primeiravez = true;
+            var ativado = false;
+            
+            function comecar(){
+                primeiravez = true;
+                if (pri){
+                  setInterval(function(){temporizador()},1000);  
+                  pri = false;
+                  ativado = true;
+                  document.getElementById("conclusao").innerHTML = "";
+                }else{
+                    ativado = true;
+                    document.getElementById("conclusao").innerHTML = "";
+                }
+                document.getElementById("acertos").innerHTML = "0";
+                document.getElementById("erros").innerHTML = "0";
+            }
+            
+            function temporizador(){
+                var tempo;
+                if (ativado){
+                   tempo = document.getElementById("tempo").innerHTML;
+                    if (tempo <= 0){
+			document.getElementById("resultado").value = "";
+                        tempo = 30;
+                        gerarConta();
+                        document.getElementById("resultado").focus();
+                        if (!primeiravez){
+                            //fim tempo
+                            ativado = false; tempo = 3;
+                            document.getElementById("primeironumero").innerHTML = "X";
+                            document.getElementById("segundonumero").innerHTML = "Y";
+                            document.getElementById("conclusao").innerHTML = "Percurso completado.";
+                            primeiravez = true;
+                        }
+                        primeiravez = false;
+                    }
+                    else if(tempo > 0){tempo -= 1}
+                    document.getElementById("tempo").innerHTML = tempo; 
+                }   
+            }
+            
+            function tratarEntrada(e){
+                var key = e.keyCode || e.which;
+                if ((key == 13) && ativado && !primeiravez && !(document.getElementById("resultado").value == '')){
+                    if (document.getElementById("resultado").value == resultado){
+                        document.getElementById("acertos").innerHTML ++;
+                    }else{
+                        document.getElementById("erros").innerHTML ++;
+                    }
+                    document.getElementById("resultado").value = "";
+                    gerarConta();
+                }
+                
+            }
+            
+            function gerarConta(){
+                var n;
+                var numeroram = Math.floor(Math.random()*7)+1;
+                if (document.getElementById(numeroram).checked){
+                    
+                        var algorismos = document.getElementById("algarismos").value;
+                        var conta = new Array();
+                        for (n=1;n<3;n++){
+                            if (algorismos == 1){conta[n] = Math.floor(Math.random()*10)}
+                            else if (algorismos == 2){conta[n] = Math.floor(Math.random()*100)}
+                            else if (algorismos == 3){conta[n] = Math.floor(Math.random()*1000)}
+                            else if (algorismos == 4){conta[n] = Math.floor(Math.random()*10000)}
+                            else if (algorismos == 5){conta[n] = Math.floor(Math.random()*100000)}
+                        }
+
+                    if (numeroram == 1){
+                        document.getElementById("sinal").innerHTML = "+";
+                        resultado = conta[1] + conta[2];
+                    }
+                    else if (numeroram == 2){
+                        document.getElementById("sinal").innerHTML = "-";
+                        if (conta[2]>conta[1]){var aux = conta[1];conta[1] = conta[2];conta[2] = aux}
+                        resultado = conta[1] - conta[2];
+                    }
+                    else if (numeroram == 3){
+                        document.getElementById("sinal").innerHTML = "x";
+                        resultado = conta[1] * conta[2];
+                    }
+                    else if (numeroram == 4){
+                        document.getElementById("sinal").innerHTML = "÷";
+                        if ((conta[1] % conta[2]) != 0){
+                            conta[1] = conta[1] * conta[2];
+                            if (conta[1].toString().length >= algorismos){
+                                gerarConta();
+                                return;  
+                            }
+                            
+                        }
+                        resultado = conta[1] / conta[2];
+                    }
+                    else if (numeroram == 5){
+                        document.getElementById("sinal").innerHTML = "\\"; 
+			if (conta[2]>conta[1]){var aux = conta[1];conta[1] = conta[2];conta[2] = aux}
+			if (conta[2] == 0){gerarConta(); return;}
+                        resultado = conta[1] % conta[2];
+                    }
+                    else if (numeroram == 6){
+                        document.getElementById("sinal").innerHTML = "^";
+                        resultado = Math.pow(conta[1], conta[2]);
+                    }
+                    else{
+                        document.getElementById("sinal").innerHTML = "\u221a";   
+			if (conta[1] == 0){gerarConta(); return;}
+                        resultado = Math.round(Math.pow(conta[2], (1/conta[1])));
+                    }
+  
+                        document.getElementById("primeironumero").innerHTML = conta[1];
+                        document.getElementById("segundonumero").innerHTML = conta[2];
+                        
+                        if (resultado.toString().length > (algorismos + 1)){
+                            gerarConta();
+                            return;
+                        }
+              
+                }else{
+                    gerarConta();
+                }
+                document.getElementById("resultado").focus();
+           }
+                
+        </script>
+    <style type="text/css">
+        input{
+            border: black dashed 2px;
+            background-color: white
+        }
+        select,button,input[type='checkbox'],.checkbox{
+            border: black solid 1px;
+            background-color: white
+        }
+        button:hover{
+            border: darkslategray dashed 1px
+        }
+        body,input{
+            font: 23px sans-serif
+        }
+        #tempo{
+            font: 18px sans-serif
+        }
+        legend, fieldset{
+            font: 16px sans-serif;
+            text-align: left    
+        }
+        label{
+            font: 15px sans-serif;
+        }
+        #primeiraparte{
+            font: 26px sans-serif
+        }
+        #conclusao{
+            font: 15px sans-serif;
+        }
+        
+    </style>
+    
+        <title>Cálculo</title>
+        
+    </head>
+    <body>
+        <div id="geral" style="text-align:center;width:260px">
+        
+            <div id="conclusao"></div>
+            <fieldset id="jogo">
+                <legend>Interface</legend>
+                
+                <fieldset id="placar" style="margin-left:10%;margin-right:10%; font: 14px sans-serif">
+                <legend style="font: 14px sans-serif">Placar</legend>
+                    <div style="width:100%;text-align:center"> 
+                        Acertos/Erros : <div style="display: inline" id="acertos">0</div>/<div style="display: inline" id="erros">0</div>
+                    </div> 
+                </fieldset>
+                
+                <div style="text-align:center;padding-top:6px">
+                    <div id="primeiraparte" style="text-align:center; display:inline-block">
+                        <div id="letras" style=""> 
+                            <div id="primeironumero" style="display: inline">
+                                X
+                            </div>
+                            <div id="sinal" style="display: inline">
+                                +
+                            </div>
+                            <div id="segundonumero" style="display: inline">
+                                Y
+                            </div>
+                            <div style="display: inline">=</div>
+                        </div>
+                        <div id="result" style="display:inline">               
+                            <input type="text" id="resultado" style="display:inline; width:200px" onkeypress="tratarEntrada(event);">
+
+                        </div>
+                    </div>
+
+                </div>
+                    <div style="padding-top:10px; text-align: center; vertical-align: middle">
+                            <img style="width:22px;height:24px;display: inline" alt="" src="data:image/png;base64,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">
+                            <div style="display:inline; position: relative; top: -5px" id="tempo">3</div>
+                            <br>
+                            <button value="true" style="width:150px;margin-top:5px" onclick="comecar()">Começar / Recomeçar</button>
+                    </div>
+                
+                
+                
+            </fieldset>
+        
+            <fieldset id="configuracoes">
+                <legend>Configurações</legend>
+                <div style="text-align: center; display: inline-block; padding-left:25px;padding-bottom:5px">
+                Qtd. algarismos:
+                    <select id="algarismos" style="width:57px">
+                        <option selected="" value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>    
+                <fieldset id="operacoes">
+                    <legend>Operações</legend>
+                    <div class="config" style="display: table-row">
+                        Adição (+):
+                        <input class="checkbox" type="checkbox" id="1" checked="" value="1">
+                    </div>
+                    <div class="config" style="display: table-row">
+                        Subtração (-):
+                        <input class="checkbox" type="checkbox" id="2" checked="" value="2">
+                    </div>
+                    <div class="config" style=" display: table-row">
+                        Multiplicação (x):
+                        <input class="checkbox" type="checkbox" id="3" checked="" value="3">
+                    </div>
+                    <div class="config" style="display: table-row">
+                        Divisão (÷):
+                        <input class="checkbox" type="checkbox" id="4" checked="" value="4">
+                    </div>
+                    <div class="config" style="display: table-row">
+                        Resto (\):
+                        <input class="checkbox" type="checkbox" id="5" value="5">
+                    </div>
+                    <div class="config" style="display: table-row">
+                        Potência (^):
+                        <input class="checkbox" type="checkbox" id="6" value="6">
+                    </div>
+                    <div class="config" style="display: table-row">
+                        Raiz (√):
+                        <input class="checkbox" type="checkbox" id="7" value="7"> (int. mais prox.)
+                    </div>
+                </fieldset>
+                
+            </fieldset>
+        </div>
+    
+
+</body></html>
